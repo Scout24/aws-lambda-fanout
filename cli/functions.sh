@@ -1,14 +1,14 @@
 #!/bin/bash
 # AWS Lambda Fan-Out Utility
-# 
+#
 # Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # A copy of the License is located at
-# 
+#
 #  http://aws.amazon.com/apache2.0
-# 
+#
 # or in the "license" file accompanying this file. This file is distributed
 # on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 # express or implied. See the License for the specific language governing
@@ -238,7 +238,7 @@ function deployFanout {
       TABLE_ARN=$(aws dynamodb create-table --table-name ${TABLE_NAME} --attribute-definitions AttributeName=sourceArn,AttributeType=S AttributeName=id,AttributeType=S --key-schema AttributeName=sourceArn,KeyType=HASH AttributeName=id,KeyType=RANGE --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --query 'TableDescription.TableArn' --output text ${CLI_PARAMS[@]} 2> /dev/null)
       echo "Created Amazon DynamoDB $TABLE_NAME with ARN: $TABLE_ARN"
     fi
-  
+
     if [ -z "$EXEC_ROLE_ARN" ]; then
       if [ -z "$EXEC_ROLE_NAME" ]; then
         EXEC_ROLE_NAME=${FUNCTION_NAME}Role
@@ -285,7 +285,7 @@ function deployFanout {
       fi
     fi
 
-    FUNCTION_ARN=$(aws lambda "create-function" --function-name $FUNCTION_NAME --runtime nodejs10.x --description "This is an Amazon Kinesis and Amazon DynamoDB Streams fanout function, look at $TABLE_NAME DynamoDB table for configuration" --handler fanout.handler --role $EXEC_ROLE_ARN --memory-size $MEMORY_SIZE --timeout $TIMEOUT --zip-file fileb://fanout.zip ${VPC_PARAMS[@]} --query 'FunctionArn' --output text ${CLI_PARAMS[@]})
+    FUNCTION_ARN=$(aws lambda "create-function" --function-name $FUNCTION_NAME --runtime nodejs16.x --description "This is an Amazon Kinesis and Amazon DynamoDB Streams fanout function, look at $TABLE_NAME DynamoDB table for configuration" --handler fanout.handler --role $EXEC_ROLE_ARN --memory-size $MEMORY_SIZE --timeout $TIMEOUT --zip-file fileb://fanout.zip ${VPC_PARAMS[@]} --query 'FunctionArn' --output text ${CLI_PARAMS[@]})
     if [ -z "${FUNCTION_ARN}" ]; then
       echo "Unable to create specified AWS Lambda Function '${FUNCTION_NAME}'" 1>&2
       cd "$OLD"
@@ -300,7 +300,7 @@ function deployFanout {
       exit -1
     fi
     echo "Updated AWS Lambda Function $FUNCTION_NAME with ARN: $FUNCTION_ARN"
-  fi 
+  fi
 
   rm fanout.zip
   cd "$OLD"
